@@ -1,6 +1,7 @@
-import moment from 'moment';
-import React, { useCallback, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import React, { useCallback, useMemo, useState } from 'react';
+
+import { getFormattedDateTimeFromFilename } from '../../lib/dateUtils';
 
 interface VideoRouteParams {
   date: string;
@@ -10,30 +11,18 @@ interface VideoRouteParams {
 interface VideoPlayerProps {
 }
 
-const INVALID_DATE_ERROR = 'Invalid date';
-
 const VideoPlayer: React.FC<VideoPlayerProps> = () => {
   const {video, date} = useParams<VideoRouteParams>();
-  const videoPath = `/videos/${date}/${video}`;
+  const videoPath = `/api/videos/${date}/${video}`;
   const [error, setError] = useState<boolean>(false);
   const handleError = useCallback(() => setError(true), []);
   const formattedDate = useMemo<null | string>(() => {
-    let formatted = null;
+    const dateTime = getFormattedDateTimeFromFilename(video);
 
-    try {
-      const time = video.split('_')[1].split('.')[0].replace(/[hms]/g, ':').slice(0, -1);
-      const parsedDate = moment(`${date} ${time}`, moment.ISO_8601)
-        .format("dddd, MMMM Do YYYY, h:mm:ss a");
-      if (parsedDate === INVALID_DATE_ERROR) {
-        throw Error(INVALID_DATE_ERROR);
-      }
-    } catch (e) {
-      console.error(e);
-      setError(true);
-    }
+    if (!dateTime) setError(true);
 
-    return formatted;
-  }, [date, video]);
+    return dateTime;
+  }, [video]);
 
   return (
     <div>
