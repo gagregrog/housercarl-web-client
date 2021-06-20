@@ -1,8 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { VideoResults } from '../../lib/requests';
-
-const DATE_LENGTH = 11;
+import { getFormattedDate, getFormattedTimeFromFilename } from '../../lib/dateUtils';
 
 interface VideoListProps {
   data: VideoResults;
@@ -15,11 +14,11 @@ const VideoList: React.FC<VideoListProps> = ({ data }) => (
       {data.map(({ date, videos }) => (
         <li key={date}>
           <ul>
-            <h3>{date}</h3>
+            <h3>{getFormattedDate(date)}</h3>
             {videos.map(video => (
               <li key={video}>
                 <Link to={`/videos/${date}/${video}`}>
-                  {video.slice(DATE_LENGTH)}
+                  {getFormattedTimeFromFilename(video)}
                 </Link>
               </li>
             ))}
